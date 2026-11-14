@@ -1,32 +1,50 @@
 pipeline {
+
+
     agent any
 
+
     stages {
-        stage('Checkout') {
+
+
+        stage('Create Virtual Environment') {
             steps {
-                git branch: 'main', url: 'https://github.com/omprakashtiwarimsc-design/flask-employee-app.git'
+                sh '''
+                    python3 --version
+                    python3 -m venv venv
+                '''
             }
         }
+
 
         stage('Install Dependencies') {
             steps {
-                sh 'python3 -m pip install --no-cache-dir -r requirements.txt'
+                sh '''
+                    ./venv/bin/python -m pip install --upgrade pip
+                    ./venv/bin/pip install -r requirements.txt
+                '''
             }
         }
+
 
         stage('Run Flask Application') {
             steps {
                 sh '''
-                    JENKINS_NODE_COOKIE=dontKillMe nohup python3 app.py > flask.log 2>&1 &
+                    nohup ./venv/bin/python app.py > flask.log 2>&1 &
                 '''
             }
         }
+
+
     }
+
 
     post {
         success {
             echo 'Flask application started successfully!'
         }
+
+
         failure {
             echo 'Pipeline execution failed!'
         }
