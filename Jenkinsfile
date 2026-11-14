@@ -30,7 +30,7 @@ pipeline {
         stage('Run Flask Application') {
             steps {
                 sh '''
-                    ./venv/bin/python app.py &
+                    nohup ./venv/bin/python app.py &
                 '''
             }
         }
